@@ -2,21 +2,40 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract Blackjack {
-    address public dealer;
-    mapping(address => bool) players;
-    mapping(address => uint256) playerBalances;
+import "./BLJCoin.sol";
 
-    constructor() {
+contract Blackjack is BLJCoin{
+    // The "dealer" is the address who provides funds (BLJCoin) and keeps
+    // players losses
+    address public dealer;
+    mapping(address => bool) public players;
+    mapping(address => uint256) public playerBalances;
+    uint public lastAwardGiven;
+
+    // Mint 10 million BlackjackCoins
+    constructor() BLJCoin(10000000) {
         dealer = msg.sender;
     }
 
     function enterTournament() public {
         require(players[msg.sender] = false, "Error: Player has already entered");
         players[msg.sender] = true;
-        fundPlayer(msg.sender);
+        fundPlayer();
     }
 
     // Provide the player with tokens once he enters tournament
-    function fundPlayer(address _address) internal {}
+    function fundPlayer() internal {
+        require(playerBalances[msg.sender] == 0, "Error: Player already has coins");
+        require(msg.sender != dealer, "Error: Dealer can't fund themselves");
+        uint amount = 10000;
+        //BLJCoin._transfer(dealer, msg.sender, amount);
+        playerBalances[msg.sender] += amount;
+    }
+
+    function giveAwards() public {
+        require(block.timestamp - lastAwardGiven > 1 weeks, "Error: Awards are only given out once per week");
+        lastAwardGiven = block.timestamp;
+
+        // Give winners awards
+    }
 }
