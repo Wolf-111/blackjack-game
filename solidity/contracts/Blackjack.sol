@@ -18,19 +18,17 @@ contract Blackjack is BLJCoin{
     }
 
     function enterTournament() public {
-        require(players[msg.sender] = false, "Error: Player has already entered");
-        players[msg.sender] = true;
-        fundPlayer();
-    }
-
-    // Provide the player with tokens once he enters tournament
-    function fundPlayer() internal {
+        require(msg.sender != dealer, "Error: Dealer can't enter tournament");
+        require(players[msg.sender] == false, "Error: Player has already entered");
         require(playerBalances[msg.sender] == 0, "Error: Player already has coins");
-        require(msg.sender != dealer, "Error: Dealer can't fund themselves");
+        players[msg.sender] = true;
+
+        // Provide the player with tokens once he enters tournament
         uint amount = 10000;
         //BLJCoin._transfer(dealer, msg.sender, amount);
         playerBalances[msg.sender] += amount;
     }
+
 
     function giveAwards() public {
         require(block.timestamp - lastAwardGiven > 1 weeks, "Error: Awards are only given out once per week");
