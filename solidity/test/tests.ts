@@ -14,15 +14,23 @@ describe("Blackjack", (): void => {
     });
 
     describe("enterTournament()", (): void => {
-        it("player is added", async (): Promise<void> => {
-            const [owner, addr1] = await ethers.getSigners();
-            let players: boolean = await blackjackContract.players(addr1.address);
-            assert.isFalse(players);
-            // await blackjackContract.enterTournament();
-            // let updatedPlayers: boolean = await blackjackContract.players(addr1.address);
-            // console.log(updatedPlayers)
+        it("call enterTournament() function", async (): Promise<void> => {
+            const signers: object = await ethers.getSigners();
+            await blackjackContract.connect(signers[1]).enterTournament();
         });
-    })
+
+        it("player is added to tournament", async (): Promise<void> => {
+            const signers: object = await ethers.getSigners();
+            let player: boolean = await blackjackContract.players(signers[1].address);
+            assert.isTrue(player)
+        });
+
+        it("player recieves funding (10,000 BLJCoins)", async (): Promise<void> => {
+            const signers: object = await ethers.getSigners();
+            let playerBalance: boolean = await blackjackContract.playerBalances(signers[1].address);
+            assert.equal(playerBalance, 10000)
+        });
+    });
 });
 
 describe("BLJCoin", (): void => {
