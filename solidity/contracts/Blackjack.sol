@@ -3,7 +3,6 @@
 pragma solidity ^0.8.0;
 
 import "./BLJCoin.sol";
-
 contract Blackjack is BLJCoin{
     // The "dealer" is the address who provides funds (BLJCoin) and keeps
     // players losses
@@ -23,12 +22,11 @@ contract Blackjack is BLJCoin{
         require(playerBalances[msg.sender] == 0, "Error: Player already has coins");
         players[msg.sender] = true;
 
-        // Provide the player with tokens once he enters tournament
+        // Provide player with tokens once they enter the tournament
         uint amount = 10000;
-        //BLJCoin._transfer(dealer, msg.sender, amount);
+        BLJCoin.fundPlayer(msg.sender, amount);
         playerBalances[msg.sender] += amount;
     }
-
 
     function giveAwards() public {
         require(block.timestamp - lastAwardGiven > 1 weeks, "Error: Awards are only given out once per week");
