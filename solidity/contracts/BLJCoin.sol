@@ -19,6 +19,7 @@ contract BLJCoin is ERC20 {
         // require(Blackjack.players(_player) == false, "Error: Player has already entered");
         // require(Blackjack.playerBalances(_player) == 0, "Error: Player already has coins");
         //console.log(allowance(creator, creator));
-        transfer(_player, _amount);
+        _approve(creator, _player, _amount);
+        transferFrom(creator, _player, _amount);
     }
 }
