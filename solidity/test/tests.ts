@@ -37,7 +37,7 @@ describe("BLJCoin", (): void => {
     let bljCoinContract = null;
     before(async (): Promise<void> => {
         const BLJCoin: any = await ethers.getContractFactory("BLJCoin");
-        const bljCoin: any = await BLJCoin.deploy(1000000);
+        const bljCoin: any = await BLJCoin.deploy(10000000);
         bljCoinContract = await bljCoin.deployed();
     });
 
