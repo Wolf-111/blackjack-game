@@ -3,6 +3,8 @@
 pragma solidity ^0.8.0;
 
 import "./BLJCoin.sol";
+import "hardhat/console.sol";
+
 contract Blackjack is BLJCoin{
     // The "dealer" is the address who provides funds (BLJCoin) and keeps
     // players losses
@@ -16,7 +18,7 @@ contract Blackjack is BLJCoin{
         dealer = msg.sender;
     }
 
-    event BeginHand(address player, uint betAmount);
+    event PlayHand(address player, uint betAmount, uint[] initialCards);
 
     modifier onlyExistingPlayers {
         require(players[msg.sender] == true, "Error: Player has not entered the tournament");
@@ -39,10 +41,27 @@ contract Blackjack is BLJCoin{
         playerBalances[msg.sender] += amount;
     }
 
+    // Generate a random number between 1-11
+    function generateCard() internal view returns(uint){
+        uint256 seed = uint256(keccak256(abi.encodePacked(
+            block.timestamp + block.difficulty +
+            ((uint256(keccak256(abi.encodePacked(block.coinbase)))) / (block.timestamp)) +
+            block.gaslimit + 
+            ((uint256(keccak256(abi.encodePacked(msg.sender)))) / (block.timestamp)) +
+            block.number
+        )));
+        return ((seed - ((seed / 11) * 11)) + 1);
+    }
+
     function playHand(uint _betAmount) onlyExistingPlayers public {
         require(playerBalances[msg.sender] >= _betAmount, "Error: Not enough funds to place bet");
-        
-        emit BeginHand(msg.sender, _betAmount);
+
+        console.log(generateCard());
+        console.log(generateCard());
+
+
+        // emit PlayHand(msg.sender, _betAmount);
+
 
         /*
         1. Player places bet
@@ -56,7 +75,7 @@ contract Blackjack is BLJCoin{
         */
     }
 
-    function giveAwards() public {
+    function claimAwards() public {
         require(block.timestamp - lastAwardGiven > 1 weeks, "Error: Awards are only given out once per week");
         lastAwardGiven = block.timestamp;
 
