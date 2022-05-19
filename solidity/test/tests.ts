@@ -32,24 +32,27 @@ describe("Blackjack", (): void => {
         });
     });
 
-    describe("playHand()", (): void => {
-        it("call playHand()", async (): Promise<void> => {
+    describe("startHand()", (): void => {
+        it("call startHand()", async (): Promise<void> => {
             const signers: object = await ethers.getSigners();
-            await blackjackContract.connect(signers[1]).playHand(100);
+            await blackjackContract.connect(signers[1]).startHand(100);
         });
         // it("hand becomes active", async (): Promise<void> => {
         //     const signers: object = await ethers.getSigners();
         //     let isHandActive = await blackjackContract.connect(signers[1]).isHandActive();
         //     assert.isTrue(isHandActive)
         // });
-        // describe("generateCard()", (): void => {
-        //     it("returns a random number between 1-11", async (): Promise<void> => {
-        //         let randomNumber: any = await blackjackContract.generateCards();
-        //         console.log(randomNumber)
-        //         // assert.isAtLeast(randomNumber, 1)
-        //         // assert.isAtMost(randomNumber, 11)
-        //     });
-        // });
+        describe("generateCard()", (): void => {
+            // it("returns a random number between 1-11", async (): Promise<void> => {
+            //     let randomNumber: any = await blackjackContract.generateCards();
+            //     let f: any = await blackjackContract.generateDealersHand();
+
+            //     console.log(randomNumber)
+            //     console.log(f)
+            //     // assert.isAtLeast(randomNumber, 1)
+            //     // assert.isAtMost(randomNumber, 11)
+            // });
+        });
     });
 });
 
