@@ -44,9 +44,10 @@ describe("Blackjack", (): void => {
         // });
         // describe("generateCard()", (): void => {
         //     it("returns a random number between 1-11", async (): Promise<void> => {
-        //         let randomNumber: number = await blackjackContract.generateCard();
-        //         assert.isAtLeast(randomNumber, 1)
-        //         assert.isAtMost(randomNumber, 11)
+        //         let randomNumber: any = await blackjackContract.generateCards();
+        //         console.log(randomNumber)
+        //         // assert.isAtLeast(randomNumber, 1)
+        //         // assert.isAtMost(randomNumber, 11)
         //     });
         // });
     });
