@@ -41,28 +41,27 @@ contract Blackjack is BLJCoin{
         playerBalances[msg.sender] += amount;
     }
 
-    // Generate a random number between 1-11
-    function generateCard() internal view returns(uint){
-        uint256 seed = uint256(keccak256(abi.encodePacked(
-            block.timestamp + block.difficulty +
-            ((uint256(keccak256(abi.encodePacked(block.coinbase)))) / (block.timestamp)) +
-            block.gaslimit + 
-            ((uint256(keccak256(abi.encodePacked(msg.sender)))) / (block.timestamp)) +
-            block.number
-        )));
-        return ((seed - ((seed / 11) * 11)) + 1);
+    // Generate 2 random numbers each between 1-11
+    function generateCards() internal view returns(uint[] memory){
+        uint[] memory arr = new uint[](2);
+        for(uint i = 0; i < 2; i++){
+            uint seed = uint256(keccak256(abi.encodePacked(
+                i + block.timestamp + block.difficulty +
+                ((uint256(keccak256(abi.encodePacked(block.coinbase)))) / (block.timestamp)) +
+                block.gaslimit + 
+                ((uint256(keccak256(abi.encodePacked(msg.sender)))) / (block.timestamp)) +
+                block.number
+            )));
+            arr[i] = ((seed - ((seed / 11) * 11)) + 1);
+        }
+        return arr;
     }
 
     function playHand(uint _betAmount) onlyExistingPlayers public {
         require(playerBalances[msg.sender] >= _betAmount, "Error: Not enough funds to place bet");
 
-        console.log(generateCard());
-        console.log(generateCard());
-
-
-        // emit PlayHand(msg.sender, _betAmount);
-
-
+         emit PlayHand(msg.sender, _betAmount, generateCards());
+         
         /*
         1. Player places bet
         2. Player & dealer are randomly dealt 2 cards each (player can only see 1 of the dealers cards)
