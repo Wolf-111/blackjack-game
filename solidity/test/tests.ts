@@ -31,6 +31,25 @@ describe("Blackjack", (): void => {
             assert.equal(playerBalance, 10000)
         });
     });
+
+    describe("playHand()", (): void => {
+        it("call playHand()", async (): Promise<void> => {
+            const signers: object = await ethers.getSigners();
+            await blackjackContract.connect(signers[1]).playHand(100);
+        });
+        // it("hand becomes active", async (): Promise<void> => {
+        //     const signers: object = await ethers.getSigners();
+        //     let isHandActive = await blackjackContract.connect(signers[1]).isHandActive();
+        //     assert.isTrue(isHandActive)
+        // });
+        // describe("generateCard()", (): void => {
+        //     it("returns a random number between 1-11", async (): Promise<void> => {
+        //         let randomNumber: number = await blackjackContract.generateCard();
+        //         assert.isAtLeast(randomNumber, 1)
+        //         assert.isAtMost(randomNumber, 11)
+        //     });
+        // });
+    });
 });
 
 describe("BLJCoin", (): void => {
