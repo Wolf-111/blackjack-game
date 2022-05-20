@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 import "./BLJCoin.sol";
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 contract Blackjack is BLJCoin{
     // The "dealer" is the address who provides funds (BLJCoin) and keeps
@@ -14,7 +14,7 @@ contract Blackjack is BLJCoin{
     mapping(address => bool) public isHandActive;
     mapping(address => uint[]) public playersHand;
     mapping(address => uint[]) public dealersHand;
-
+    mapping(address => bool) public hasPlayerStayed;
     uint public lastAwardGiven;
 
     // Mint 10 million BlackjackCoins
@@ -36,6 +36,11 @@ contract Blackjack is BLJCoin{
 
     modifier onlyDuringHand {
         require(isHandActive[msg.sender] == true, "Error: Hand is not active/being played");
+        _;
+    }
+
+    modifier onlyBeforeStay {
+        require(hasPlayerStayed[msg.sender] == false, "Error: Player has already chosen to stay");
         _;
     }
 
@@ -97,23 +102,30 @@ contract Blackjack is BLJCoin{
         return ((seed - ((seed / 11) * 11)) + 1);
     }
 
-    function hitHand() onlyDuringHand public {
+    function revealDealersHand() onlyDuringHand private view returns (uint[] memory) {
+        // Continue here
+        return dealersHand[msg.sender];
+    }
+
+    function hitHand() onlyDuringHand onlyBeforeStay public {
         uint newCard = generateRandomCard();
         playersHand[msg.sender].push(newCard);
     }
 
     function stayHand() onlyDuringHand public {
-
+        hasPlayerStayed[msg.sender] = true;
+        revealDealersHand();
     }
 
     function startHand(uint _betAmount) onlyExistingPlayers public {
         require(playerBalances[msg.sender] >= _betAmount, "Error: Not enough funds to place bet");
         require(isHandActive[msg.sender] == false, "Error: You have already started a hand");
         isHandActive[msg.sender] = true;
+        hasPlayerStayed[msg.sender] = false;
 
-        // Store hands in memory to save gas
         playersHand[msg.sender] = generatePlayersHand();
         dealersHand[msg.sender] = generateDealersHand();
+
         emit StartHand(msg.sender, _betAmount, playersHand[msg.sender], dealersHand[msg.sender]);
 
         /*
