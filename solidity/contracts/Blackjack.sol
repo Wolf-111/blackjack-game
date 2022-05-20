@@ -102,14 +102,46 @@ contract Blackjack is BLJCoin{
         return ((seed - ((seed / 11) * 11)) + 1);
     }
 
-    function revealDealersHand() onlyDuringHand private view returns (uint[] memory) {
-        // Continue here
+    function revealDealersHand() onlyDuringHand private returns (uint[] memory) {
+        uint dealerTotal = dealersHand[msg.sender][0] + dealersHand[msg.sender][1];
+        uint playerTotal = 0;
+        for (uint i = 0; i < playersHand[msg.sender].length; i++) {
+            playerTotal += playersHand[msg.sender][i];
+        }
+
+        while(dealerTotal < playerTotal){
+            hitDealersHand();
+
+            if(dealerTotal <= 21 && dealerTotal > playerTotal) {
+                // Dealer wins
+            }
+            if(dealerTotal > 21){
+                // Player wins
+            }
+            if(dealerTotal == playerTotal){
+                // Push
+            }
+        }
         return dealersHand[msg.sender];
+    }
+
+    function hitDealersHand() onlyDuringHand private {
+        uint newCard = generateRandomCard();
+        dealersHand[msg.sender].push(newCard);
     }
 
     function hitHand() onlyDuringHand onlyBeforeStay public {
         uint newCard = generateRandomCard();
         playersHand[msg.sender].push(newCard);
+
+        uint playerTotal = 0;
+        for (uint i = 0; i < playersHand[msg.sender].length; i++) {
+            playerTotal += playersHand[msg.sender][i];
+        }
+
+        if(playerTotal > 21){
+            // Dealer wins
+        }
     }
 
     function stayHand() onlyDuringHand public {
