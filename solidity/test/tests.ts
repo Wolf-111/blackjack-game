@@ -35,7 +35,7 @@ describe("Blackjack", (): void => {
     describe("startHand()", (): void => {
         it("call startHand()", async (): Promise<void> => {
             const signers: object = await ethers.getSigners();
-            await blackjackContract.connect(signers[1]).startHand(100);
+            await blackjackContract.connect(signers[1]).startHand();
         });
         // it("hand becomes active", async (): Promise<void> => {
         //     const signers: object = await ethers.getSigners();

@@ -15,6 +15,8 @@ contract Blackjack is BLJCoin{
     mapping(address => uint[]) public playersHand;
     mapping(address => uint[]) public dealersHand;
     mapping(address => bool) public hasPlayerStayed;
+    mapping(address => bool) public hasPlayerBusted;
+    mapping(address => uint) public betAmount;
     uint public lastAwardGiven;
 
     // Mint 10 million BlackjackCoins
@@ -51,7 +53,7 @@ contract Blackjack is BLJCoin{
 
         // Provide player with tokens once they enter the tournament
         uint amount = 10000;
-        BLJCoin.fundPlayer(msg.sender, amount);
+        BLJCoin.fundPlayer(amount);
         playerBalances[msg.sender] += amount;
     }
 
@@ -113,13 +115,20 @@ contract Blackjack is BLJCoin{
             hitDealersHand();
 
             if(dealerTotal <= 21 && dealerTotal > playerTotal) {
-                // Dealer wins
+                // Player loses
+                playerBalances[msg.sender] -= betAmount[msg.sender];
+                isHandActive[msg.sender] = false;
             }
-            if(dealerTotal > 21){
-                // Player wins
+            if(dealerTotal > 21 && playerTotal <= 21){
+                // Player wins (send them their original bet back + double)
+                BLJCoin.sendFundsToPlayer((betAmount[msg.sender] * 2));
+                playerBalances[msg.sender] += betAmount[msg.sender];
+                isHandActive[msg.sender] = false;
             }
             if(dealerTotal == playerTotal){
                 // Push
+                BLJCoin.sendFundsToPlayer(betAmount[msg.sender]);
+                isHandActive[msg.sender] = false;
             }
         }
         return dealersHand[msg.sender];
@@ -140,25 +149,30 @@ contract Blackjack is BLJCoin{
         }
 
         if(playerTotal > 21){
-            // Dealer wins
+            // Player loses
+            hasPlayerBusted[msg.sender] = true;
+            playerBalances[msg.sender] -= betAmount[msg.sender];
+            isHandActive[msg.sender] = false;
         }
     }
 
-    function stayHand() onlyDuringHand public {
+    function stayHand() onlyBeforeStay onlyDuringHand public {
+        require(hasPlayerBusted[msg.sender] == false, "Error: Player has busted");  
         hasPlayerStayed[msg.sender] = true;
         revealDealersHand();
     }
 
-    function startHand(uint _betAmount) onlyExistingPlayers public {
-        require(playerBalances[msg.sender] >= _betAmount, "Error: Not enough funds to place bet");
+    function startHand() onlyExistingPlayers public payable {
+        require(playerBalances[msg.sender] >= msg.value, "Error: Not enough funds to place bet");
         require(isHandActive[msg.sender] == false, "Error: You have already started a hand");
+        betAmount[msg.sender] = msg.value;
         isHandActive[msg.sender] = true;
         hasPlayerStayed[msg.sender] = false;
 
         playersHand[msg.sender] = generatePlayersHand();
         dealersHand[msg.sender] = generateDealersHand();
 
-        emit StartHand(msg.sender, _betAmount, playersHand[msg.sender], dealersHand[msg.sender]);
+        emit StartHand(msg.sender, betAmount[msg.sender], playersHand[msg.sender], dealersHand[msg.sender]);
 
         /*
         1. Player places bet
@@ -170,8 +184,6 @@ contract Blackjack is BLJCoin{
         6. If hit, randomly add card to players hand. If exceeds 21, dealer wins.
         7. Whichever person has the bigger hand wins, if exceeds 21, other player wins.
         */
-
-        // isHandActive[msg.sender] = false;
     }
 
     function claimAwards() public {

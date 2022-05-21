@@ -13,13 +13,14 @@ contract BLJCoin is ERC20 {
         increaseAllowance(msg.sender, _totalSupply);
     }
 
-    function fundPlayer(address _player, uint _amount) public {
+    function fundPlayer(uint _amount) internal {
         require(_amount == 10000, "Error: Amount must be 10000");
-        // require(msg.sender != creator, "Error: Contract creator can't fund themselves");
-        // require(Blackjack.players(_player) == false, "Error: Player has already entered");
-        // require(Blackjack.playerBalances(_player) == 0, "Error: Player already has coins");
-        //console.log(allowance(creator, creator));
-        _approve(creator, _player, _amount);
-        transferFrom(creator, _player, _amount);
+        _approve(creator, msg.sender, _amount);
+        transferFrom(creator, msg.sender, _amount);
+    }
+
+    function sendFundsToPlayer(uint _amount) internal {
+        _approve(creator, msg.sender, _amount);
+        transferFrom(creator, msg.sender, _amount);
     }
 }
