@@ -179,17 +179,6 @@ contract Blackjack is BLJCoin{
         dealersHand[msg.sender] = generateDealersHand();
 
         emit StartHand(msg.sender, betAmount[msg.sender], playersHand[msg.sender], dealersHand[msg.sender]);
-
-        /*
-        1. Player places bet
-        2. Player & dealer are randomly dealt 2 cards each (player can only see 1 of the dealers cards)
-        3. Player given option to double down or not
-        4. Player can hit or stay
-        5. If stay, reveal dealers hidden card & keep hitting until values are greater than or equal to
-           the player's cards. If exceeds 21, player wins.
-        6. If hit, randomly add card to players hand. If exceeds 21, dealer wins.
-        7. Whichever person has the bigger hand wins, if exceeds 21, other player wins.
-        */
     }
 
     function claimAwards() public {
