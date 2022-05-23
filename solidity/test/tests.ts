@@ -7,6 +7,7 @@ describe("Blackjack", (): void => {
         const Blackjack: any = await ethers.getContractFactory("Blackjack");
         const blackjack: any = await Blackjack.deploy();
         blackjackContract = await blackjack.deployed();
+        blackjackContract.provider.pollingInterval = 1;
     });
 
     it("dealer is initiated", async (): Promise<void> => {
@@ -36,12 +37,22 @@ describe("Blackjack", (): void => {
         it("call startHand()", async (): Promise<void> => {
             const signers: object = await ethers.getSigners();
             // 500 wei
-            await blackjackContract.connect(signers[1]).startHand({value: ethers.utils.parseEther("0.0000000000000005")});
+            await blackjackContract.connect(signers[1]).startHand({ value: ethers.utils.parseEther("0.0000000000000005") });
         });
 
-        it("emits StartHand", async (): Promise<void> => {
+        it("emits StartHand event", async (): Promise<void> => {
+            const signers: object = await ethers.getSigners();
             await blackjackContract.on("StartHand", (player: string, betAmount: number, playersHand: number[], dealersHand: number[]) => {
-                return;
+                assert.equal(player, signers[1].address);
+                assert.equal(betAmount, 500);
+                playersHand.map((card: number) => {
+                    assert.isAtLeast(card, 1);
+                    assert.isAtMost(card, 11);
+                })
+                dealersHand.map((card: number) => {
+                    assert.isAtLeast(card, 1);
+                    assert.isAtMost(card, 11);
+                });
             });
         });
     });
