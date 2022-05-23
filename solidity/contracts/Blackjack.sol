@@ -113,22 +113,28 @@ contract Blackjack is BLJCoin{
 
         while(dealerTotal < playerTotal){
             hitDealersHand();
+            for (uint i = 0; i < dealersHand[msg.sender].length; i++) {
+                dealerTotal += dealersHand[msg.sender][i];
+            }
 
             if(dealerTotal <= 21 && dealerTotal > playerTotal) {
                 // Player loses
                 playerBalances[msg.sender] -= betAmount[msg.sender];
                 isHandActive[msg.sender] = false;
+                break;
             }
             if(dealerTotal > 21 && playerTotal <= 21){
                 // Player wins (send them their original bet back + double)
                 BLJCoin.sendFundsToPlayer((betAmount[msg.sender] * 2));
                 playerBalances[msg.sender] += betAmount[msg.sender];
                 isHandActive[msg.sender] = false;
+                break;
             }
             if(dealerTotal == playerTotal){
                 // Push
                 BLJCoin.sendFundsToPlayer(betAmount[msg.sender]);
                 isHandActive[msg.sender] = false;
+                break;
             }
         }
         return dealersHand[msg.sender];
