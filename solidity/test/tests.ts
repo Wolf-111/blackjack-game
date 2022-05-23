@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers";
+
 const { assert } = require("chai");
 const { ethers } = require("hardhat");
 
@@ -54,6 +56,29 @@ describe("Blackjack", (): void => {
                     assert.isAtMost(card, 11);
                 });
             });
+        });
+    });
+
+    describe("hitHand()", (): void => {
+        it("should add card to players hand", async (): Promise<void> => {
+            const signers: object = await ethers.getSigners();
+            // Kind of a janky solution since mappings don't have lengths
+            let firstCard: number = await blackjackContract.playersHand(signers[1].address, 0);
+            let secondCard: number = await blackjackContract.playersHand(signers[1].address, 1);
+            assert.isDefined(firstCard.toString())
+            assert.isDefined(secondCard.toString())
+
+            await blackjackContract.connect(signers[1]).hitHand();
+            
+            let thirdCard: number = await blackjackContract.playersHand(signers[1].address, 2);
+            assert.isDefined(thirdCard.toString())
+        });
+    });
+
+    describe("stayHand()", (): void => {
+        it("call hitHand()", async (): Promise<void> => {
+            const signers: object = await ethers.getSigners();
+            await blackjackContract.connect(signers[1]).hitHand();
         });
     });
 });
