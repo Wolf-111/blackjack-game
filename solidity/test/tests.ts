@@ -35,23 +35,14 @@ describe("Blackjack", (): void => {
     describe("startHand()", (): void => {
         it("call startHand()", async (): Promise<void> => {
             const signers: object = await ethers.getSigners();
-            await blackjackContract.connect(signers[1]).startHand();
+            // 500 wei
+            await blackjackContract.connect(signers[1]).startHand({value: ethers.utils.parseEther("0.0000000000000005")});
         });
-        // it("hand becomes active", async (): Promise<void> => {
-        //     const signers: object = await ethers.getSigners();
-        //     let isHandActive = await blackjackContract.connect(signers[1]).isHandActive();
-        //     assert.isTrue(isHandActive)
-        // });
-        describe("generateCard()", (): void => {
-            // it("returns a random number between 1-11", async (): Promise<void> => {
-            //     let randomNumber: any = await blackjackContract.generateCards();
-            //     let f: any = await blackjackContract.generateDealersHand();
 
-            //     console.log(randomNumber)
-            //     console.log(f)
-            //     // assert.isAtLeast(randomNumber, 1)
-            //     // assert.isAtMost(randomNumber, 11)
-            // });
+        it("emits StartHand", async (): Promise<void> => {
+            await blackjackContract.on("StartHand", (player: string, betAmount: number, playersHand: number[], dealersHand: number[]) => {
+                return;
+            });
         });
     });
 });
